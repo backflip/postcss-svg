@@ -9,6 +9,9 @@
 ```pcss
 .icon--square {
   content: url("shared-sprites#square" param(--color blue));
+
+  /* Alternative syntax */
+  /* content: url("shared-sprites?--color=blue#square"); */
 }
 
 /* becomes */

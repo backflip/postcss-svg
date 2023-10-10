@@ -3,6 +3,7 @@
 
 // native tooling
 import path from 'path';
+import { URLSearchParams } from 'url';
 
 // external tooling
 import parser from 'postcss-values-parser';
@@ -37,8 +38,8 @@ export default function transpileDecl(result, promises, decl, opts, cache) { // 
 			// <url> split by fragment identifier symbol (#)
 			const urlParts = urlNode.value.split('#');
 
-			// <url> src
-			const src = urlParts[0];
+			// <url> src and query string
+			const [src, queryString] = urlParts[0].split('?');
 
 			// <url> fragment identifier
 			const id = urlParts.slice(1).join('#');
@@ -46,10 +47,16 @@ export default function transpileDecl(result, promises, decl, opts, cache) { // 
 			// whether the <url> has a fragment identifier
 			const hasID = urlParts.length > 1;
 
+			// whether the <url> has search params
+			const searchParams = new URLSearchParams(queryString);
+
 			// <url> param()s
-			const params = paramsFromNodes(
-				node.nodes.slice(2, -1)
-			);
+			const params = {
+				...paramsFromSearchParams(searchParams),
+				...paramsFromNodes(
+					node.nodes.slice(2, -1)
+				)
+			};
 
 			node.nodes.slice(2, -1).forEach(childNode => {
 				childNode.remove();
@@ -135,6 +142,20 @@ function paramsFromNodes(nodes) {
 		if (isFilledParam(node)) {
 			params[node.nodes[1].value] = String(node.nodes[2]).trim();
 		}
+	});
+
+	// return valid params as an object
+	return params;
+}
+
+// params from URL search params
+function paramsFromSearchParams(searchParams) {
+	// valid params as an object
+	const params = {};
+
+	// for each search param
+	searchParams.forEach((value, key) => {
+		params[key] = value;
 	});
 
 	// return valid params as an object

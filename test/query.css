@@ -1,0 +1,3 @@
+test-sprite {
+	background-image: url("sprite.svg?--color=blue#camera");
+}

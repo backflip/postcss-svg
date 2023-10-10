@@ -22,5 +22,8 @@ module.exports = {
 		options: {
 			dirs: 'test/sprite-module'
 		}
-	}
+	},
+	'query': {
+		message: 'supports query params'
+	},
 };
